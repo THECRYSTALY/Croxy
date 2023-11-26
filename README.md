@@ -59,6 +59,11 @@ response = requester.post('https://api.example.com', data=post_data)
 print('Response:', response.text)
 ```
 
+## TODO
+
+- **Proxy Server:** Easily, create a proxy server.
+- **More Protocols:** Add support for other protocols.
+
 ## Contribution
 
 Feel free to contribute to the development of this package by submitting issues or pull requests on the [GitHub repository](https://github.com/THECRYSTALY/Croxy).
