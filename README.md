@@ -20,7 +20,7 @@ from croxy.client import HTTProxy
 requester = HTTProxy()
 
 # Set proxy configuration
-requester.set_proxy('your_proxy_address', 8080)
+requester.set_proxy(('your_proxy_address', 8080))
 
 # Make a request using the configured proxy
 response = requester.get('https://example.com')
@@ -28,34 +28,28 @@ response = requester.get('https://example.com')
 print('Response:', response.text)
 ```
 
-## Configuration
-
-The package supports the following configuration options:
-
-- **Proxy Address:** The address of the proxy server.
-- **Proxy Port:** The port number on which the proxy server is running.
-
-Example configuration:
-
-```python
-requester.set_proxy('proxy.example.com', 8080)
-```
-
 ## Examples
 
-### Making GET Request
+### Porxy With Sessions Support 
 
 ```python
-response = requester.get('https://example.com')
+from croxy.client import Proxy
+
+proxy = Proxy(session=True)
+proxy.set_proxy(('your_proxy_address','your_proxy_port'))
+proxy.post('https://example.com/login', data={ 'username': 'admin', 'password': 'admin' }
+response = proxy.get('https://example.com/user')
 print('Response:', response.text)
 ```
 
-### Making POST Request
+### Proxy That Requires Authentication
 
 ```python
-post_data = {'key1': 'value1', 'key2': 'value2'}
+from croxy.client import Proxy
 
-response = requester.post('https://api.example.com', data=post_data)
+proxy = Proxy()
+proxy.set_proxy(('your_proxy_address','your_proxy_port'), ('your_username','your_password'))
+response = proxy.get('https://example.com/user')
 print('Response:', response.text)
 ```
 
