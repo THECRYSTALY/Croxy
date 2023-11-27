@@ -1,35 +1,39 @@
 import requests
+from requests.auth import HTTPProxyAuth
 
 
 class HTTProxy:
-    """
-    class for HTTP prxoy.
-    """
+    
     TEST_URL = 'http://httpbin.org/ip'
 
-    def __init__(self, address: str, port: int = 80, session: bool = False, proxy: bool = True, auto_test: bool = True):
+    def __init__(self, session: bool = False):
         """
-        address: the address of the proxy.
-        port: port of the proxy, default is 80.
-        session: set it to True if you want to save token and cookies.
-        proxy: set it to False if you dont want a proxy to be used.
-        auto_test: automatically tests the proxy, set it to False if you dont want that.
+        session: set it to True if you want to save tokens and cookies.
         """
-        self.address = address
-        self.port = port
-        self.proxy = proxy
         self.requests = requests.Session() if session else requests
-        self.valid = self.test() if auto_test else None
+        self.auth = None
+        self.proxy = None
+    
+    def set_proxy(self, address, auth=None):
+        """
+        call it if you want to use a proxy, otherwise requests will use the system`s ip address.
+        address: Tuple of form (address, port).
+        auth: Tuple of form (username,password)
+        """
+        addr, port = address
+        if auth:
+            self.auth = HTTPProxyAuth(auth[0], auth[1])
+        self.proxy = (address, port)
 
     def test(self):
         """
-        Tests the proxy using TEST_URL, used to set the proxy valid or invalid.
+        Tests the proxy using TEST_URL.
         """
         proxy = {
-            "http": f"http://{self.address}:{self.port}",
+            "http": f"http://{self.proxy[0]}:{self.proxy[1]}",
         } if self.proxy else None
         try:
-            response = self.requests.get(self.TEST_URL, proxies=proxy)
+            response = self.requests.get(self.TEST_URL, proxies=proxy, auth=self.auth)
             if response.status_code == 200:
                 return True
         except:
@@ -39,16 +43,13 @@ class HTTProxy:
     def post(self, *args, **kwargs):
         """
         Sends a post request using the proxy.
-
-        args: Same args that requests.post take.
-        kwargs: same kwargs that requests.post take.
         """
         proxy = {
-            "http": f"{self.address}:{self.port}",
+            "http": f"{self.proxy[0]}:{self.proxy[1]}",
         } if self.proxy else None
 
         try:
-            response = self.requests.post(*args, proxies=proxy, **kwargs)
+            response = self.requests.post(*args, proxies=proxy, auth=self.auth, **kwargs)
             return 0, response
         except requests.exceptions.ProxyError as e:
             return 1, e
@@ -58,16 +59,13 @@ class HTTProxy:
     def get(self, *args, **kwargs):
         """
         Sends a get request using the proxy.
-
-        args: Same args that requests.get take.
-        kwargs: same kwargs that requests.get take.
         """
         proxy = {
-            "http": f"{self.address}:{self.port}",
+            "http": f"{self.proxy[0]}:{self.proxy[1]}",
         } if self.proxy else None
 
         try:
-            response = self.requests.get(*args, proxies=proxy, **kwargs)
+            response = self.requests.get(*args, proxies=proxy, auth=self.auth, **kwargs)
             return 0, response
         except requests.exceptions.ProxyError as e:
             return 1, e
@@ -77,16 +75,13 @@ class HTTProxy:
     def put(self, *args, **kwargs):
         """
         Sends a put request using the proxy.
-
-        args: Same args that requests.put take.
-        kwargs: same kwargs that requests.put take.
         """
         proxy = {
-            "http": f"{self.address}:{self.port}",
+            "http": f"{self.proxy[0]}:{self.proxy[1]}",
         } if self.proxy else None
 
         try:
-            response = self.requests.put(*args, proxies=proxy, **kwargs)
+            response = self.requests.put(*args, proxies=proxy, auth=self.auth, **kwargs)
             return 0, response
         except requests.exceptions.ProxyError as e:
             return 1, e
@@ -96,16 +91,13 @@ class HTTProxy:
     def delete(self, *args, **kwargs):
         """
         Sends a delete request using the proxy.
-
-        args: Same args that requests.delete take.
-        kwargs: same kwargs that requests.delete take.
         """
         proxy = {
-            "http": f"{self.address}:{self.port}",
+            "http": f"{self.proxy[0]}:{self.proxy[1]}",
         } if self.proxy else None
 
         try:
-            response = self.requests.delete(*args, proxies=proxy, **kwargs)
+            response = self.requests.delete(*args, proxies=proxy, auth=self.auth, **kwargs)
             return 0, response
         except requests.exceptions.ProxyError as e:
             return 1, e
@@ -115,16 +107,13 @@ class HTTProxy:
     def patch(self, *args, **kwargs):
         """
         Sends a get request using the proxy.
-
-        args: Same args that requests.patch take.
-        kwargs: same kwargs that requests.patch take.
         """
         proxy = {
-            "http": f"{self.address}:{self.port}",
+            "http": f"{self.proxy[0]}:{self.proxy[1]}",
         } if self.proxy else None
 
         try:
-            response = self.requests.patch(*args, proxies=proxy, **kwargs)
+            response = self.requests.patch(*args, proxies=proxy, auth=self.auth, **kwargs)
             return 0, response
         except requests.exceptions.ProxyError as e:
             return 1, e
@@ -134,16 +123,13 @@ class HTTProxy:
     def head(self, *args, **kwargs):
         """
         Sends a head request using the proxy.
-
-        args: Same args that requests.head take.
-        kwargs: same kwargs that requests.head take.
         """
         proxy = {
-            "http": f"{self.address}:{self.port}",
+            "http": f"{self.proxy[0]}:{self.proxy[1]}",
         } if self.proxy else None
 
         try:
-            response = self.requests.head(*args, proxies=proxy, **kwargs)
+            response = self.requests.head(*args, proxies=proxy, auth=self.auth, **kwargs)
             return 0, response
         except requests.exceptions.ProxyError as e:
             return 1, e
@@ -152,17 +138,14 @@ class HTTProxy:
     
     def options(self, *args, **kwargs):
         """
-        Sends a options request using the proxy.
-
-        args: Same args that requests.options take.
-        kwargs: same kwargs that requests.options take.
+        Sends an options request using the proxy.
         """
         proxy = {
-            "http": f"{self.address}:{self.port}",
+            "http": f"{self.proxy[0]}:{self.proxy[1]}",
         } if self.proxy else None
 
         try:
-            response = self.requests.options(*args, proxies=proxy, **kwargs)
+            response = self.requests.options(*args, proxies=proxy, auth=self.auth, **kwargs)
             return 0, response
         except requests.exceptions.ProxyError as e:
             return 1, e
